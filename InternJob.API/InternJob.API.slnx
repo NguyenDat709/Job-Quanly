@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="../InternJob.Core/InternJob.Core.csproj" />
+  <Project Path="../InternJob.Infrastructure/InternJob.Infrastructure.csproj" />
+  <Project Path="InternJob.API.csproj" />
+</Solution>
