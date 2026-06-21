@@ -1,0 +1,134 @@
+﻿using InternJob.Core.DTOs.Job;
+using InternJob.Core.Entities;
+using InternJob.Core.Interfaces.Repositories;
+using InternJob.Core.Interfaces.Services;
+
+namespace InternJob.Infrastructure.Services;
+
+public class JobService : IJobService
+{
+    private readonly IJobRepository _jobRepository;
+    private readonly IEmployerRepository _employerRepository;
+    private readonly ICategoryRepository _categoryRepository;
+
+    public JobService(
+        IJobRepository jobRepository,
+        IEmployerRepository employerRepository,
+        ICategoryRepository categoryRepository)
+    {
+        _jobRepository = jobRepository;
+        _employerRepository = employerRepository;
+        _categoryRepository = categoryRepository;
+    }
+
+    public async Task<JobResponse> CreateJobAsync(int userId, CreateJobRequest request)
+    {
+        var employer = await _employerRepository.GetByUserIdAsync(userId)
+            ?? throw new Exception("Không tìm thấy hồ sơ nhà tuyển dụng.");
+
+        if (!await _categoryRepository.ExistsAsync(request.CategoryId))
+            throw new Exception("Danh mục ngành nghề không tồn tại.");
+
+        if (request.Deadline <= DateTime.UtcNow)
+            throw new Exception("Hạn nộp hồ sơ phải là ngày trong tương lai.");
+
+        var job = new JobPosting
+        {
+            EmployerId = employer.EmployerId,
+            CategoryId = request.CategoryId,
+            Title = request.Title,
+            Description = request.Description,
+            Requirements = request.Requirements,
+            Salary = request.Salary,
+            Location = request.Location,
+            Deadline = request.Deadline,
+            Status = "Pending"
+        };
+
+        await _jobRepository.AddAsync(job);
+        await _jobRepository.SaveChangesAsync();
+
+        var created = await _jobRepository.GetByIdWithDetailsAsync(job.JobId);
+        return MapToResponse(created!);
+    }
+
+    public async Task<JobResponse> UpdateJobAsync(int userId, int jobId, UpdateJobRequest request)
+    {
+        var employer = await _employerRepository.GetByUserIdAsync(userId)
+            ?? throw new Exception("Không tìm thấy hồ sơ nhà tuyển dụng.");
+
+        var job = await _jobRepository.GetByIdAsync(jobId)
+            ?? throw new Exception("Không tìm thấy tin tuyển dụng.");
+
+        if (job.EmployerId != employer.EmployerId)
+            throw new Exception("Bạn không có quyền chỉnh sửa tin này.");
+
+        if (job.Status == "Closed")
+            throw new Exception("Không thể chỉnh sửa tin đã đóng.");
+
+        if (request.Deadline <= DateTime.UtcNow)
+            throw new Exception("Hạn nộp hồ sơ phải là ngày trong tương lai.");
+
+        if (!await _categoryRepository.ExistsAsync(request.CategoryId))
+            throw new Exception("Danh mục ngành nghề không tồn tại.");
+
+        job.Title = request.Title;
+        job.Description = request.Description;
+        job.Requirements = request.Requirements;
+        job.Salary = request.Salary;
+        job.Location = request.Location;
+        job.Deadline = request.Deadline;
+        job.CategoryId = request.CategoryId;
+
+        await _jobRepository.SaveChangesAsync();
+
+        var updated = await _jobRepository.GetByIdWithDetailsAsync(job.JobId);
+        return MapToResponse(updated!);
+    }
+
+    public async Task CloseJobAsync(int userId, int jobId)
+    {
+        var employer = await _employerRepository.GetByUserIdAsync(userId)
+            ?? throw new Exception("Không tìm thấy hồ sơ nhà tuyển dụng.");
+
+        var job = await _jobRepository.GetByIdAsync(jobId)
+            ?? throw new Exception("Không tìm thấy tin tuyển dụng.");
+
+        if (job.EmployerId != employer.EmployerId)
+            throw new Exception("Bạn không có quyền đóng tin này.");
+
+        if (job.Status == "Closed")
+            throw new Exception("Tin tuyển dụng đã đóng trước đó.");
+
+        job.Status = "Closed";
+        await _jobRepository.SaveChangesAsync();
+    }
+
+    public async Task<List<JobResponse>> GetMyJobsAsync(int userId)
+    {
+        var employer = await _employerRepository.GetByUserIdAsync(userId)
+            ?? throw new Exception("Không tìm thấy hồ sơ nhà tuyển dụng.");
+
+        var jobs = await _jobRepository.GetByEmployerIdAsync(employer.EmployerId);
+        return jobs.Select(MapToResponse).ToList();
+    }
+
+    // ---------- Private ----------
+    private static JobResponse MapToResponse(JobPosting j) => new()
+    {
+        JobId = j.JobId,
+        Title = j.Title,
+        Description = j.Description,
+        Requirements = j.Requirements,
+        Salary = j.Salary,
+        Location = j.Location,
+        Deadline = j.Deadline,
+        Status = j.Status,
+        CreatedAt = j.CreatedAt,
+        EmployerId = j.EmployerId,
+        CompanyName = j.Employer.CompanyName,
+        CompanyLogo = j.Employer.Logo,
+        CategoryId = j.CategoryId,
+        CategoryName = j.Category.CategoryName
+    };
+}

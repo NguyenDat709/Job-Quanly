@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using InternJob.Core.Entities;
+﻿using InternJob.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace InternJob.Infrastructure.Data;
@@ -15,6 +10,8 @@ public class AppDbContext : DbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<CandidateProfile> CandidateProfiles => Set<CandidateProfile>();
     public DbSet<EmployerProfile> EmployerProfiles => Set<EmployerProfile>();
+    public DbSet<JobCategory> JobCategories => Set<JobCategory>();
+    public DbSet<JobPosting> JobPostings => Set<JobPosting>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -47,6 +44,34 @@ public class AppDbContext : DbContext
             e.HasOne(ep => ep.User)
              .WithOne(u => u.EmployerProfile)
              .HasForeignKey<EmployerProfile>(ep => ep.UserId);
+        });
+
+        // JobCategory
+        modelBuilder.Entity<JobCategory>(e =>
+        {
+            e.HasKey(c => c.CategoryId);
+            e.Property(c => c.CategoryName).HasMaxLength(100).IsRequired();
+            e.Property(c => c.Description).HasMaxLength(255);
+        });
+
+        // JobPosting
+        modelBuilder.Entity<JobPosting>(e =>
+        {
+            e.HasKey(j => j.JobId);
+            e.Property(j => j.Title).HasMaxLength(150).IsRequired();
+            e.Property(j => j.Salary).HasMaxLength(50).HasDefaultValue("Thỏa thuận");
+            e.Property(j => j.Location).HasMaxLength(150).IsRequired();
+            e.Property(j => j.Status).HasMaxLength(20).HasDefaultValue("Pending");
+
+            e.HasOne(j => j.Employer)
+             .WithMany(ep => ep.JobPostings)
+             .HasForeignKey(j => j.EmployerId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            e.HasOne(j => j.Category)
+             .WithMany(c => c.JobPostings)
+             .HasForeignKey(j => j.CategoryId)
+             .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

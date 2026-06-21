@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace InternJob.Core.Entities
+﻿namespace InternJob.Core.Entities
 {
     public class EmployerProfile
     {
@@ -17,5 +11,7 @@ namespace InternJob.Core.Entities
 
         // Navigation
         public User User { get; set; } = null!;
+
+        public ICollection<JobPosting> JobPostings { get; set; } = new List<JobPosting>();
     }
 }
