@@ -47,4 +47,40 @@ public class JobRepository : IJobRepository
     {
         await _context.SaveChangesAsync();
     }
+
+    public async Task<(List<JobPosting> Items, int Total)> SearchAsync(
+        string? keyword,
+        string? location,
+        int? categoryId,
+        int page,
+        int pageSize)
+    {
+        var query = _context.JobPostings
+            .Include(j => j.Employer)
+            .Include(j => j.Category)
+            .Where(j => j.Status == "Active")
+            .Where(j => j.Deadline >= DateTime.UtcNow) // Chưa hết hạn
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(keyword))
+            query = query.Where(j =>
+                j.Title.Contains(keyword) ||
+                j.Description.Contains(keyword));
+
+        if (!string.IsNullOrWhiteSpace(location))
+            query = query.Where(j => j.Location.Contains(location));
+
+        if (categoryId.HasValue)
+            query = query.Where(j => j.CategoryId == categoryId.Value);
+
+        var total = await query.CountAsync();
+
+        var items = await query
+            .OrderByDescending(j => j.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (items, total);
+    }
 }

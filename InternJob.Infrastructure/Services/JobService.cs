@@ -1,4 +1,5 @@
-﻿using InternJob.Core.DTOs.Job;
+﻿using InternJob.Core.DTOs;
+using InternJob.Core.DTOs.Job;
 using InternJob.Core.Entities;
 using InternJob.Core.Interfaces.Repositories;
 using InternJob.Core.Interfaces.Services;
@@ -113,7 +114,36 @@ public class JobService : IJobService
         return jobs.Select(MapToResponse).ToList();
     }
 
-    // ---------- Private ----------
+    public async Task<PagedResponse<JobListResponse>> SearchJobsAsync(JobSearchRequest request)
+    {
+        var (items, total) = await _jobRepository.SearchAsync(
+            request.Keyword,
+            request.Location,
+            request.CategoryId,
+            request.Page,
+            request.PageSize);
+
+        return new PagedResponse<JobListResponse>
+        {
+            Items = items.Select(MapToListResponse).ToList(),
+            TotalItems = total,
+            Page = request.Page,
+            PageSize = request.PageSize
+        };
+    }
+
+    public async Task<JobResponse> GetJobDetailAsync(int jobId)
+    {
+        var job = await _jobRepository.GetByIdWithDetailsAsync(jobId)
+            ?? throw new Exception("Không tìm thấy tin tuyển dụng.");
+
+        if (job.Status != "Active")
+            throw new Exception("Tin tuyển dụng không còn hiển thị.");
+
+        return MapToResponse(job);
+    }
+
+    // ---------- Helper ----------
     private static JobResponse MapToResponse(JobPosting j) => new()
     {
         JobId = j.JobId,
@@ -129,6 +159,20 @@ public class JobService : IJobService
         CompanyName = j.Employer.CompanyName,
         CompanyLogo = j.Employer.Logo,
         CategoryId = j.CategoryId,
+        CategoryName = j.Category.CategoryName
+    };
+
+    private static JobListResponse MapToListResponse(JobPosting j) => new()
+    {
+        JobId = j.JobId,
+        Title = j.Title,
+        Salary = j.Salary,
+        Location = j.Location,
+        Deadline = j.Deadline,
+        Status = j.Status,
+        CreatedAt = j.CreatedAt,
+        CompanyName = j.Employer.CompanyName,
+        CompanyLogo = j.Employer.Logo,
         CategoryName = j.Category.CategoryName
     };
 }
