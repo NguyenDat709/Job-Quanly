@@ -91,6 +91,39 @@ public class JobController : ControllerBase
         }
     }
 
+    // GET api/job?keyword=&location=&categoryId=&page=&pageSize=
+    [HttpGet("search")]
+    [AllowAnonymous]
+    public async Task<IActionResult> SearchJobs([FromQuery] JobSearchRequest request)
+    {
+        try
+        {
+            var result = await _jobService.SearchJobsAsync(request);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    // GET api/job/{id}
+    [HttpGet("{id}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetJobDetail(int id)
+    {
+        try
+        {
+            var result = await _jobService.GetJobDetailAsync(id);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
+
+
     // ---------- Helper ----------
     private int GetUserId()
     {
