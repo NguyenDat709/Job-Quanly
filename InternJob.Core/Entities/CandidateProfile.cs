@@ -17,5 +17,7 @@ namespace InternJob.Core.Entities
 
         // Navigation
         public User User { get; set; } = null!;
+        public ICollection<CV> CVs { get; set; } = new List<CV>();
+        public ICollection<Application> Applications { get; set; } = new List<Application>();
     }
 }

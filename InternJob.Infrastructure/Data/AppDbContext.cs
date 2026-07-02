@@ -13,6 +13,10 @@ public class AppDbContext : DbContext
     public DbSet<JobCategory> JobCategories => Set<JobCategory>();
     public DbSet<JobPosting> JobPostings => Set<JobPosting>();
 
+    // Job application
+    public DbSet<CV> CVs => Set<CV>();
+    public DbSet<Application> Applications => Set<Application>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // User
@@ -71,6 +75,44 @@ public class AppDbContext : DbContext
             e.HasOne(j => j.Category)
              .WithMany(c => c.JobPostings)
              .HasForeignKey(j => j.CategoryId)
+             .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // CV
+        modelBuilder.Entity<CV>(e =>
+        {
+            e.HasKey(c => c.CVId);
+            e.Property(c => c.FileName).HasMaxLength(255).IsRequired();
+            e.Property(c => c.FilePath).HasMaxLength(255).IsRequired();
+
+            e.HasOne(c => c.Candidate)
+             .WithMany(cp => cp.CVs)
+             .HasForeignKey(c => c.CandidateId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Application
+        modelBuilder.Entity<Application>(e =>
+        {
+            e.HasKey(a => a.ApplicationId);
+            e.Property(a => a.Status).HasMaxLength(30).HasDefaultValue("Đang xem xét");
+
+            // Mỗi ứng viên chỉ ứng tuyển 1 lần mỗi job
+            e.HasIndex(a => new { a.JobId, a.CandidateId }).IsUnique();
+
+            e.HasOne(a => a.Job)
+             .WithMany()
+             .HasForeignKey(a => a.JobId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            e.HasOne(a => a.Candidate)
+             .WithMany(cp => cp.Applications)
+             .HasForeignKey(a => a.CandidateId)
+             .OnDelete(DeleteBehavior.Restrict);
+
+            e.HasOne(a => a.CV)
+             .WithMany(c => c.Applications)
+             .HasForeignKey(a => a.CVId)
              .OnDelete(DeleteBehavior.Restrict);
         });
     }
