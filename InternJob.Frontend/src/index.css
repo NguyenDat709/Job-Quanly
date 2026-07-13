@@ -1,0 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #F5F7FA;
+  color: #1A202C;
+}
+h1, h2, h3, h4, .font-display { font-family: 'Sora', sans-serif; }
+.font-mono-num { font-family: 'IBM Plex Mono', monospace; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #b0c3dd; border-radius: 8px; }

@@ -58,7 +58,7 @@ public class JobRepository : IJobRepository
         var query = _context.JobPostings
             .Include(j => j.Employer)
             .Include(j => j.Category)
-            .Where(j => j.Status == "Active")
+            .Where(j => j.Status == "Approved")
             .Where(j => j.Deadline >= DateTime.UtcNow) // Chưa hết hạn
             .AsQueryable();
 

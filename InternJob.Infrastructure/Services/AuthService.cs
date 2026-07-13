@@ -13,7 +13,7 @@ using InternJob.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using BCrypt.Net; // Add this at the top with other using statements
+using BCrypt.Net;
 
 namespace InternJob.Infrastructure.Services;
 

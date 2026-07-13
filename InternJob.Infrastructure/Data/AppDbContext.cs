@@ -66,7 +66,8 @@ public class AppDbContext : DbContext
             e.Property(j => j.Salary).HasMaxLength(50).HasDefaultValue("Thỏa thuận");
             e.Property(j => j.Location).HasMaxLength(150).IsRequired();
             e.Property(j => j.Status).HasMaxLength(20).HasDefaultValue("Pending");
-
+            e.Property(j => j.SalaryMin).HasColumnType("int");
+            e.Property(j => j.SalaryMax).HasColumnType("int");
             e.HasOne(j => j.Employer)
              .WithMany(ep => ep.JobPostings)
              .HasForeignKey(j => j.EmployerId)

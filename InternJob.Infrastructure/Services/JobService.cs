@@ -137,8 +137,8 @@ public class JobService : IJobService
         var job = await _jobRepository.GetByIdWithDetailsAsync(jobId)
             ?? throw new Exception("Không tìm thấy tin tuyển dụng.");
 
-        if (job.Status != "Active")
-            throw new Exception("Tin tuyển dụng không còn hiển thị.");
+        // if ( job.Status != "Pending")
+        //     throw new Exception("Tin tuyển dụng không còn hiển thị.");
 
         return MapToResponse(job);
     }
@@ -151,6 +151,8 @@ public class JobService : IJobService
         Description = j.Description,
         Requirements = j.Requirements,
         Salary = j.Salary,
+        SalaryMin = j.SalaryMin,
+        SalaryMax = j.SalaryMax,
         Location = j.Location,
         Deadline = j.Deadline,
         Status = j.Status,
@@ -166,6 +168,8 @@ public class JobService : IJobService
     {
         JobId = j.JobId,
         Title = j.Title,
+        SalaryMin = j.SalaryMin,
+        SalaryMax = j.SalaryMax,
         Salary = j.Salary,
         Location = j.Location,
         Deadline = j.Deadline,
