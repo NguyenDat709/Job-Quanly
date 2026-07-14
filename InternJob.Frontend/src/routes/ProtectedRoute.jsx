@@ -7,6 +7,10 @@ export default function ProtectedRoute({ roles }) {
   const { user, loading } = useAuth();
   if (loading) return null;
   if (!user) return <Navigate to="/login" replace />;
-  if (roles && !roles.includes(user.role)) return <Navigate to="/403" replace />;
+  const isAllowed = roles && roles.some(role => role.toLowerCase() === user.role.toLowerCase());
+  
+  if (roles && !isAllowed) return <Navigate to="/403" replace />;
+  console.log("User role:", user.role);
+  console.log("Allowed roles:", roles);
   return <Outlet />;
 }

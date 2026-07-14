@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization;
 namespace InternJob.Core.DTOs.Application;
 
 public class ApplyJobRequest
 {
     [Required]
-    public int CVId { get; set; }
+    [JsonPropertyName("cvId")]
+    public int CvId { get; set; }
 }

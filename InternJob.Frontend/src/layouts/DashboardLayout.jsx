@@ -8,7 +8,7 @@ import { NAV_BY_ROLE, ROLE_LABEL } from "./navConfig";
 export default function DashboardLayout() {
   const { user } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const nav = NAV_BY_ROLE[user.role];
+  const nav = NAV_BY_ROLE[user.role?.toLowerCase()] || [];
 
   return (
     <div className="min-h-screen bg-canvas flex">
@@ -17,7 +17,7 @@ export default function DashboardLayout() {
         <Link to="/" className="flex items-center h-16 px-6 font-display font-extrabold text-lg border-b border-navy-700">
           Việc<span className="text-teal-400">Ngay</span>
         </Link>
-        <div className="px-6 py-4 text-xs uppercase tracking-wide text-navy-300">{ROLE_LABEL[user.role]}</div>
+        <div className="px-6 py-4 text-xs uppercase tracking-wide text-navy-300">{ROLE_LABEL[user.role?.toLowerCase()]}</div>
         <nav className="flex-1 px-3 space-y-1">
           {nav.map((item) => (
             <NavLink

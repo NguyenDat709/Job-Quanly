@@ -20,19 +20,28 @@ export default function Login() {
   const toast = useToast();
   const navigate = useNavigate();
   const location = useLocation();
-
+  const HOME_BY_ROLE = { 
+    candidate: "/candidate/dashboard", 
+    employer: "/employer/dashboard", 
+    admin: "/admin/dashboard" 
+  };
   async function handleSubmit(e) {
-    e.preventDefault();
-    setError(""); setLoading(true);
-    try {
-      const user = await login(email, password);
-      toast.success(`Chào mừng trở lại, ${user.fullName}!`);
-      navigate(location.state?.from || HOME_BY_ROLE[user.role]);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+      e.preventDefault();
+      setError(""); setLoading(true);
+      try {
+        const user = await login(email, password);
+        toast.success(`Chào mừng trở lại, ${user.fullName}!`);
+        
+        // CHỈNH SỬA Ở ĐÂY:
+        // Chuyển role từ API về chữ thường trước khi so sánh với key trong object
+        const roleKey = user.role.toLowerCase(); 
+        navigate(location.state?.from || HOME_BY_ROLE[roleKey]);
+        
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
   }
 
   return (

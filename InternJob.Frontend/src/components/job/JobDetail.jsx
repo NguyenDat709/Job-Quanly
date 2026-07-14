@@ -38,14 +38,33 @@ useEffect(() => {
       setLoading(false);
     });
   return () => { alive = false; };
-}, [id]);
-
-  function handleApplyClick() {
-    if (!user) { navigate("/login", { state: { from: `/jobs/${id}` } }); return; }
-    if (user.role !== "candidate") return;
-    if (cvs.length === 0) { navigate(`/candidate/upload-cv?jobId=${id}`); return; }
-    setApplyOpen(true);
+  if (user?.role?.toLowerCase() === "candidate") {
+    api.get("/CV/myCV").then(res => setCvs(res.data)).catch(err => console.log(err));
   }
+}, [id,user]);
+async function handleApplyClick() {
+  if (!user) { navigate("/login"); return; }
+  
+  // Nếu chưa có CV thì bắt buộc phải upload
+  if (cvs.length === 0) { 
+    navigate(`/candidate/upload-cv?jobId=${id}`); 
+    return; 
+  }
+
+  // Tự động ứng tuyển với CV đầu tiên trong danh sách
+  setSubmitting(true);
+  try {
+    const firstCvId = cvs[0].id; 
+    await api.applyToJob({ jobId: id, candidateId: user.id, cvId: firstCvId });
+    toast.success("Ứng tuyển thành công!");
+    // Cập nhật trạng thái để nút biến thành "Đã ứng tuyển"
+    setMyApplication({ status: "Pending" }); 
+  } catch (e) {
+    toast.error("Có lỗi xảy ra: " + e.message);
+  } finally {
+    setSubmitting(false);
+  }
+}
 
   async function confirmApply() {
     setSubmitting(true);
@@ -94,7 +113,7 @@ useEffect(() => {
         <Card>
           <p className="text-sm text-gray-500 mb-3">Hạn nộp hồ sơ: <span className="font-semibold text-ink">{job.deadline}</span></p>
 
-          {!user || user.role === "candidate" ? (
+          {!user || user.role?.toLowerCase() === "candidate" ? (
             isExpired ? (
               <>
                 <button disabled className="w-full py-2.5 rounded-lg bg-gray-200 text-gray-500 font-semibold text-sm cursor-not-allowed">Ứng tuyển</button>

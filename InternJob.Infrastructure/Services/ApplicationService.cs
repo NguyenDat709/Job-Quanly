@@ -32,7 +32,7 @@ public class ApplicationService : IApplicationService
         var job = await _jobRepository.GetByIdWithDetailsAsync(jobId)
             ?? throw new Exception("Không tìm thấy tin tuyển dụng.");
 
-        if (job.Status != "Active")
+        if (job.Status != "Approved")
             throw new Exception("Tin tuyển dụng không còn nhận hồ sơ.");
 
         if (job.Deadline < DateTime.UtcNow)
@@ -42,7 +42,7 @@ public class ApplicationService : IApplicationService
             throw new Exception("Bạn đã ứng tuyển vị trí này rồi.");
 
         // Kiểm tra CV thuộc về candidate này
-        var cv = await _cvRepository.GetByIdAsync(request.CVId)
+        var cv = await _cvRepository.GetByIdAsync(request.CvId)
             ?? throw new Exception("Không tìm thấy CV.");
 
         if (cv.CandidateId != candidate.CandidateId)
@@ -52,7 +52,7 @@ public class ApplicationService : IApplicationService
         {
             JobId = jobId,
             CandidateId = candidate.CandidateId,
-            CVId = request.CVId,
+            CVId = request.CvId,
             Status = "Đang xem xét"
         };
 

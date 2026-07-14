@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import * as api from "../mockapi";
-
+import api from "../mockapi/api";
+import axios from "axios";
 const AuthContext = createContext(null);
 const SESSION_KEY = "jobportal_session";
 
@@ -14,20 +14,24 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }, []);
 
-  function persist(u) {
+ function persist(u) {
     setUser(u);
     if (u) localStorage.setItem(SESSION_KEY, JSON.stringify(u));
     else localStorage.removeItem(SESSION_KEY);
   }
 
   async function login(email, password) {
-    const u = await api.login(email, password);
-    persist(u);
+    // Gọi API thật ở đây, dùng await bình thường vì hàm đã có async
+    const response = await api.post("/Auth/login", { email, password });
+    const u = response.data;
+    
+    persist(u); // Lưu dữ liệu sau khi API trả về
     return u;
   }
 
   async function register(payload) {
-    const u = await api.register(payload);
+    const response = await api.post("/Auth/register", payload);
+    const u = response.data;
     persist(u);
     return u;
   }

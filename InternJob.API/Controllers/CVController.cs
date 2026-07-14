@@ -16,7 +16,6 @@ public class CVController : ControllerBase
     {
         _cvService = cvService;
     }
-
     // POST api/cv/upload
     [HttpPost("upload")]
     public async Task<IActionResult> UploadCV(IFormFile file)

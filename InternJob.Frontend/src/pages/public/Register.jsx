@@ -19,9 +19,16 @@ export default function Register() {
     e.preventDefault();
     setError(""); setLoading(true);
     try {
-      const user = await register(form);
+      const payload = {
+        ...form,
+        role: form.role.charAt(0).toUpperCase() + form.role.slice(1) // Biến 'candidate' thành 'Candidate'
+      };
+
+      const user = await register(payload); // GỬI 'payload' ĐÃ ĐƯỢC ÉP KIỂU
       toast.success("Đăng ký thành công!");
-      navigate(HOME_BY_ROLE[user.role]);
+      
+      // Chú ý: Backend có thể trả về role viết hoa, nên cũng cần lowercase khi điều hướng
+      navigate(HOME_BY_ROLE[user.role.toLowerCase()]);
     } catch (err) {
       setError(err.message);
     } finally {
