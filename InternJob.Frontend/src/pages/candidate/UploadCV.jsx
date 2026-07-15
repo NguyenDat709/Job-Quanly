@@ -133,8 +133,22 @@ async function handleApply(cvId) {
       )}
 
       {/* Sửa link Xem và Tải xuống: dùng cv.cvId */}
-      <a href={`http://localhost:5248/api/CV/download/${cv.cvId}`} target="_blank" rel="noopener noreferrer" className="text-navy-600 font-semibold hover:underline">Xem</a>
-      <a href={`http://localhost:5248/api/CV/download/${cv.cvId}`} download className="text-navy-600 font-semibold hover:underline">Tải xuống</a>
+     <a
+        href={`http://localhost:5248${cv.filePath}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-navy-600 font-semibold hover:underline"
+      >
+        Xem
+      </a>
+
+      <a
+        href={`http://localhost:5248${cv.filePath}`}
+        download
+        className="text-navy-600 font-semibold hover:underline"
+      >
+        Tải xuống
+      </a>
       
       {/* Sửa nút Xóa */}
       <button onClick={() => setToDelete(cv.cvId)} className="text-coral-600 font-semibold hover:underline">Xóa</button>
@@ -143,7 +157,6 @@ async function handleApply(cvId) {
 ))}
     </ul>
     )}</Card>
-
       {jobId && <Link to={`/candidate/jobs/${jobId}`}
        className="inline-block mt-4 text-sm text-teal-600 font-semibold hover:underline">
         ← Quay lại tin tuyển dụng

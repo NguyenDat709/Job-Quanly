@@ -15,4 +15,5 @@ public class ApplicationResponse
     // CV info
     public int CVId { get; set; }
     public string CVFileName { get; set; } = null!;
+    public string CVPath { get; set; } = null!;
 }

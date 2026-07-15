@@ -11,17 +11,20 @@ public class ApplicationService : IApplicationService
     private readonly ICandidateRepository _candidateRepository;
     private readonly IJobRepository _jobRepository;
     private readonly ICVRepository _cvRepository;
+    private readonly IEmployerRepository _employerRepository;
 
     public ApplicationService(
         IApplicationRepository applicationRepository,
         ICandidateRepository candidateRepository,
         IJobRepository jobRepository,
-        ICVRepository cvRepository)
+        ICVRepository cvRepository,
+        IEmployerRepository employerRepository)
     {
         _applicationRepository = applicationRepository;
         _candidateRepository = candidateRepository;
         _jobRepository = jobRepository;
         _cvRepository = cvRepository;
+        _employerRepository = employerRepository;
     }
 
     public async Task<ApplicationResponse> ApplyJobAsync(int userId, int jobId, ApplyJobRequest request)
@@ -44,7 +47,7 @@ public class ApplicationService : IApplicationService
         // Kiểm tra CV thuộc về candidate này
         var cv = await _cvRepository.GetByIdAsync(request.CvId)
             ?? throw new Exception("Không tìm thấy CV.");
-
+        System.Diagnostics.Debug.WriteLine("DEBUG CHECK: FilePath của CV là: " + (cv.FilePath ?? "ĐANG BỊ NULL"));
         if (cv.CandidateId != candidate.CandidateId)
             throw new Exception("CV không thuộc về tài khoản của bạn.");
 
@@ -53,7 +56,8 @@ public class ApplicationService : IApplicationService
             JobId = jobId,
             CandidateId = candidate.CandidateId,
             CVId = request.CvId,
-            Status = "Đang xem xét"
+            Status = "Đang xem xét",
+            SubmittedCVPath = cv.FilePath
         };
 
         await _applicationRepository.AddAsync(application);
@@ -71,6 +75,29 @@ public class ApplicationService : IApplicationService
             CVId = cv.CVId,
             CVFileName = cv.FileName
         };
+    }
+
+    public async Task<List<ApplicationResponse>> GetApplicationsByEmployerIdAsync(int employerId)
+    {
+       var employer = await _employerRepository.GetByUserIdAsync(employerId)
+        ?? throw new Exception("Không tìm thấy nhà tuyển dụng.");
+
+    var applications = await _applicationRepository
+        .GetAllByEmployerIdAsync(employer.EmployerId);
+
+    return applications.Select(a => new ApplicationResponse
+    {
+        ApplicationId = a.ApplicationId,
+        Status = a.Status,
+        AppliedAt = a.AppliedAt,
+        JobId = a.Job.JobId,
+        JobTitle = a.Job.Title,
+        CompanyName = a.Job.Employer!.CompanyName,
+        Location = a.Job.Location,
+        CVId = a.CV.CVId,
+        CVFileName = a.CV.FileName,
+        CVPath = a.CV.FilePath
+    }).ToList();
     }
 
     public async Task<List<ApplicationResponse>> GetMyApplicationsAsync(int userId)

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,15 +39,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
+            ValidateIssuer = false,
+            ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
+            RoleClaimType = ClaimTypes.Role
         };
+ 
     });
 
 builder.Services.AddControllers();
@@ -97,7 +100,13 @@ app.UseSwaggerUI();
 app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.Use(async (context, next) => {
+    var user = context.User;
+    // Kiểm tra xem User đã được xác thực chưa
+    var isAuthenticated = user.Identity?.IsAuthenticated;
+    System.Diagnostics.Debug.WriteLine($"User authenticated: {isAuthenticated}");
+    await next();
+});
 app.MapControllers();
 
 app.Run();

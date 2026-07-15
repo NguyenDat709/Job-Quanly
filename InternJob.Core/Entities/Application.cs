@@ -8,6 +8,7 @@ public class Application
     public int CVId { get; set; }
     public string Status { get; set; } = "Đang xem xét";
     public DateTime AppliedAt { get; set; } = DateTime.UtcNow;
+    public string SubmittedCVPath { get; set; } = null!;
 
     // Navigation
     public JobPosting Job { get; set; } = null!;

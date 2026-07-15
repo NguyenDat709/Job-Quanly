@@ -82,7 +82,11 @@ public class AuthService : IAuthService
 
         if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             throw new Exception("Email hoặc mật khẩu không đúng.");
-
+        var token = GenerateToken(user); // Tạo token trước
+    
+        // THÊM DÒNG NÀY ĐỂ KIỂM TRA
+        System.Diagnostics.Debug.WriteLine("DEBUG: Đăng nhập thành công!");
+        System.Diagnostics.Debug.WriteLine("DEBUG: Token đã tạo: " + token);
         return new AuthResponse
         {
             Token = GenerateToken(user),

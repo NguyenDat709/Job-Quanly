@@ -4,16 +4,13 @@ using InternJob.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace InternJob.Infrastructure.Repositories;
-
 public class JobRepository : IJobRepository
 {
     private readonly AppDbContext _context;
-
     public JobRepository(AppDbContext context)
     {
         _context = context;
     }
-
     public async Task<JobPosting?> GetByIdAsync(int jobId)
     {
         return await _context.JobPostings
@@ -59,7 +56,7 @@ public class JobRepository : IJobRepository
             .Include(j => j.Employer)
             .Include(j => j.Category)
             .Where(j => j.Status == "Approved")
-            .Where(j => j.Deadline >= DateTime.UtcNow) // Chưa hết hạn
+            .Where(j => j.Deadline >= DateTime.UtcNow) 
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(keyword))
@@ -80,7 +77,6 @@ public class JobRepository : IJobRepository
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
-
         return (items, total);
     }
 }

@@ -30,7 +30,16 @@ public class ApplicationRepository : IApplicationRepository
             .OrderByDescending(a => a.AppliedAt)
             .ToListAsync();
     }
-
+    public async Task<List<Application>> GetAllByEmployerIdAsync(int employerId)
+    {
+        return await _context.Applications
+            .Include(a => a.Job)
+            .ThenInclude(j=>j.Employer)         
+            .Include(a => a.CV)          // Lấy thông tin CV
+            .Where(a => a.Job.EmployerId == employerId)
+            .OrderByDescending(a => a.AppliedAt) // Lọc theo Employer
+            .ToListAsync();
+    }
     public async Task AddAsync(Application application)
     {
         await _context.Applications.AddAsync(application);

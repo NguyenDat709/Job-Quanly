@@ -3,7 +3,6 @@ using InternJob.Core.Entities;
 using InternJob.Core.Interfaces.Repositories;
 using InternJob.Core.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
-
 namespace InternJob.Infrastructure.Services;
 
 public class CVService : ICVService
@@ -11,7 +10,6 @@ public class CVService : ICVService
     private readonly ICVRepository _cvRepository;
     private readonly ICandidateRepository _candidateRepository;
     private readonly string _uploadPath;
-
     public CVService(ICVRepository cvRepository, ICandidateRepository candidateRepository)
     {
         _cvRepository = cvRepository;
@@ -33,7 +31,6 @@ public class CVService : ICVService
         if (!allowedExtensions.Contains(extension))
             throw new Exception("Chỉ chấp nhận file PDF, DOC, DOCX.");
 
-        // 5MB limit
         if (file.Length > 5 * 1024 * 1024)
             throw new Exception("File không được vượt quá 5MB.");
 
@@ -78,7 +75,8 @@ public class CVService : ICVService
         {
             CVId = c.CVId,
             FileName = c.FileName,
-            UploadedAt = c.UploadedAt
+            UploadedAt = c.UploadedAt,
+            FilePath = c.FilePath
         }).ToList();
     }
 }

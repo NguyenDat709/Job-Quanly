@@ -6,4 +6,5 @@ public interface IApplicationService
 {
     Task<ApplicationResponse> ApplyJobAsync(int userId, int jobId, ApplyJobRequest request);
     Task<List<ApplicationResponse>> GetMyApplicationsAsync(int userId);
+    Task<List<ApplicationResponse>> GetApplicationsByEmployerIdAsync(int employerId);
 }

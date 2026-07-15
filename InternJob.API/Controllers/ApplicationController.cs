@@ -8,7 +8,7 @@ namespace InternJob.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Candidate")]
+
 public class ApplicationController : ControllerBase
 {
     private readonly IApplicationService _applicationService;
@@ -20,6 +20,7 @@ public class ApplicationController : ControllerBase
 
     // POST api/application/job/{jobId}
     [HttpPost("job/{jobId}")]
+    [Authorize(Roles = "Candidate")]
     public async Task<IActionResult> ApplyJob(int jobId, [FromBody] ApplyJobRequest request)
     {
         if (!ModelState.IsValid)
@@ -39,6 +40,7 @@ public class ApplicationController : ControllerBase
 
     // GET api/application/my
     [HttpGet("my")]
+    [Authorize(Roles = "Candidate")]
     public async Task<IActionResult> GetMyApplications()
     {
         try
@@ -52,7 +54,19 @@ public class ApplicationController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
-
+    
+    [HttpGet("employer")] // API: GET /api/Application/employer
+    [Authorize(Roles = "Employer")]
+    public async Task<IActionResult> GetApplicationsForEmployer()
+    {
+        // Lấy ID của nhà tuyển dụng đang đăng nhập
+        var employerId = GetUserId(); 
+        
+        // Gọi Service (bạn cần viết hàm này trong ApplicationService)
+        var result = await _applicationService.GetApplicationsByEmployerIdAsync(employerId);
+        
+        return Ok(result);
+    }
     private int GetUserId()
     {
         var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
