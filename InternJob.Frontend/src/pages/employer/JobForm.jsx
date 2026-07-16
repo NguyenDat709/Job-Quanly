@@ -62,16 +62,18 @@ export default function JobForm() {
   setSaving(true);
 
   try {
-    const payload = {
+    const salaryMinInVND = Number(form.salaryMin) * 1000000;
+    const salaryMaxInVND = Number(form.salaryMax) * 1000000;
+    const payload = {  
       title: form.title,
       description: form.description,
       requirements: form.requirements,
       salary: `${Number(form.salaryMin).toLocaleString("vi-VN")} - ${Number(form.salaryMax).toLocaleString("vi-VN")} VNĐ`,
-      salaryMin: Number(form.salaryMin),
-      salaryMax: Number(form.salaryMax),
+       salaryMin: salaryMinInVND,
+      salaryMax: salaryMaxInVND,
       location: form.location,
       deadline: form.deadline,
-      categoryId: Number(form.categoryId)
+      categoryId: 1
     };
 
     if (isEdit) {
@@ -79,6 +81,7 @@ export default function JobForm() {
       toast.success("Cập nhật thành công");
     } else {
       await api.post("/Job", payload);
+      console.log(payload);
       toast.success("Đăng tin thành công");
     }
 

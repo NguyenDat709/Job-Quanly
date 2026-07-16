@@ -26,10 +26,6 @@ public class JobService : IJobService
     {
         var employer = await _employerRepository.GetByUserIdAsync(userId)
             ?? throw new Exception("Không tìm thấy hồ sơ nhà tuyển dụng.");
-
-        if (!await _categoryRepository.ExistsAsync(request.CategoryId))
-            throw new Exception("Danh mục ngành nghề không tồn tại.");
-
         if (request.Deadline <= DateTime.UtcNow)
             throw new Exception("Hạn nộp hồ sơ phải là ngày trong tương lai.");
 
@@ -71,9 +67,6 @@ public class JobService : IJobService
 
         if (request.Deadline <= DateTime.UtcNow)
             throw new Exception("Hạn nộp hồ sơ phải là ngày trong tương lai.");
-
-        if (!await _categoryRepository.ExistsAsync(request.CategoryId))
-            throw new Exception("Danh mục ngành nghề không tồn tại.");
 
         job.Title = request.Title;
         job.Description = request.Description;

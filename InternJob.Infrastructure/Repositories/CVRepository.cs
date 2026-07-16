@@ -36,4 +36,9 @@ public class CVRepository : ICVRepository
     {
         await _context.SaveChangesAsync();
     }
+
+    public void Update(CV cv)
+    {
+        _context.Entry(cv).State = EntityState.Modified;
+    }
 }

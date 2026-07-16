@@ -35,7 +35,7 @@ public class ApplicationService : IApplicationService
         var job = await _jobRepository.GetByIdWithDetailsAsync(jobId)
             ?? throw new Exception("Không tìm thấy tin tuyển dụng.");
 
-        if (job.Status != "Approved")
+        if (job.Status != "Approved" && job.Status != "Pending")
             throw new Exception("Tin tuyển dụng không còn nhận hồ sơ.");
 
         if (job.Deadline < DateTime.UtcNow)

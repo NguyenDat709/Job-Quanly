@@ -45,17 +45,32 @@ public class CVService : ICVService
         {
             await file.CopyToAsync(stream);
         }
+        CV cv;
+        var oldCv = (await _cvRepository.GetByCandidateIdAsync(candidate.CandidateId))
+    .FirstOrDefault();
 
-        var cv = new CV
+        if (oldCv != null)
         {
-            CandidateId = candidate.CandidateId,
-            FileName = file.FileName,
-            FilePath = $"/uploads/cvs/{uniqueFileName}"
-        };
+            oldCv.FileName = file.FileName;
+            oldCv.FilePath = $"/uploads/cvs/{uniqueFileName}";
+            oldCv.UploadedAt = DateTime.UtcNow;
 
-        await _cvRepository.AddAsync(cv);
+            _cvRepository.Update(oldCv);
+            cv=oldCv;
+        }
+        else
+        {
+            cv = new CV
+            {
+                CandidateId = candidate.CandidateId,
+                FileName = file.FileName,
+                FilePath = $"/uploads/cvs/{uniqueFileName}"
+            };
+
+            await _cvRepository.AddAsync(cv);
+        }
+
         await _cvRepository.SaveChangesAsync();
-
         return new UploadCVResponse
         {
             CVId = cv.CVId,

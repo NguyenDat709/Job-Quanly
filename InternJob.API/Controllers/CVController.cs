@@ -47,6 +47,7 @@ public class CVController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
+    
 
     private int GetUserId()
     {

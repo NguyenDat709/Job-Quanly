@@ -55,7 +55,7 @@ public class JobRepository : IJobRepository
         var query = _context.JobPostings
             .Include(j => j.Employer)
             .Include(j => j.Category)
-            .Where(j => j.Status == "Approved")
+            .Where(j=>j.Status == "Approved" || j.Status=="Pending")
             .Where(j => j.Deadline >= DateTime.UtcNow) 
             .AsQueryable();
 

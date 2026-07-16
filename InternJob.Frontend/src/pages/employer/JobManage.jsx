@@ -80,20 +80,20 @@ export default function EmployerJobManage() {
           <Table
             emptyLabel="Bạn chưa đăng tin tuyển dụng nào"
             columns={[
-              { key: "title", header: "Vị trí", render: (r) => <Link to={`/employer/jobs/${r.id}/edit`} className="font-medium text-ink hover:text-teal-600">{r.title}</Link> },
+              { key: "title", header: "Vị trí", render: (r) => <Link to={`/employer/jobs/${r.jobId}/edit`} className="font-medium text-ink hover:text-teal-600">{r.title}</Link> },
               { key: "location", header: "Địa điểm" },
               { key: "deadline", header: "Hạn tuyển" },
               { key: "status", header: "Trạng thái", render: (r) => <Badge status={r.status} /> },
               {
                 key: "actions", header: "", render: (r) => (
                   <div className="flex items-center gap-3 text-sm justify-end">
-                    <Link to={`/employer/jobs/${r.id}/edit`} className="text-navy-600 font-semibold hover:underline">Sửa</Link>
+                    <Link to={`/employer/jobs/${r.jobId}/edit`} className="text-navy-600 font-semibold hover:underline">Sửa</Link>
                     {r.status !== "expired" && (
                       <button onClick={() => toggleStatus(r)} className="text-navy-600 font-semibold hover:underline">
                         {r.status === "open" ? "Đóng tin" : "Mở lại"}
                       </button>
                     )}
-                    <button onClick={() => setToDelete(r.id)} className="text-coral-600 font-semibold hover:underline">Xóa</button>
+                    {/* <button onClick={() => setToDelete(r.id)} className="text-coral-600 font-semibold hover:underline">Xóa</button> */}
                   </div>
                 )
               },

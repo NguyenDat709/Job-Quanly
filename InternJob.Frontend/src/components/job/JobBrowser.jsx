@@ -72,11 +72,11 @@ export default function JobBrowser({ detailBasePath }) {
         placeholder="Tất cả địa điểm" 
         options={LOCATIONS.map((l) => ({ value: l, label: l }))}
         />
-        <FilterSelect value={categoryId} 
+        {/* <FilterSelect value={categoryId} 
         onChange={(v) => { setCategoryId(v); setPage(1); }} 
         placeholder="Tất cả ngành nghề" 
         options={categories.map((c) => ({ value: c.id, label: c.name }))}
-        />
+        /> */}
       </FilterBar>
 
       {loading ? (

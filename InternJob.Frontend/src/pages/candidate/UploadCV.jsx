@@ -33,11 +33,15 @@ export default function UploadCV() {
     formData.append("file", file); 
 
     try {
-      const res = await api.post("/CV/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
+          const res = await api.post("/CV/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
       });
 
-      setCv((c) => [...c, res.data]);
+      const list = await api.get("/CV/myCV");
+      setCv(list.data);
+
       toast.success("Tải CV lên thành công.");
     } catch (e) {
       toast.error(e.response?.data?.message || "Lỗi upload!");

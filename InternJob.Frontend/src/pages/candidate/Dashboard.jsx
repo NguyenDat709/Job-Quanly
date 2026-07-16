@@ -56,20 +56,7 @@ export default function CandidateDashboard() {
         )}
       </Card>
 
-      <Card title="Hoạt động AI gần đây" action={<Link to="/candidate/ai-history" className="text-sm font-semibold text-teal-600 hover:underline">Xem lịch sử →</Link>}>
-        {aiHistory.length === 0 ? (
-          <EmptyState title="Chưa có hoạt động AI" description="Hãy dùng AI để đánh giá CV hoặc luyện phỏng vấn." icon="🤖" />
-        ) : (
-          <ul className="space-y-3">
-            {aiHistory.map((h) => (
-              <li key={h.id} className="text-sm text-gray-600 border-b border-navy-50 pb-3 last:border-0">
-                <span className="font-medium text-ink">{h.type === "cv_review" ? "Đánh giá CV" : "Câu hỏi phỏng vấn"}</span> · {h.createdAt}
-                <p className="mt-1 line-clamp-1">{h.result}</p>
-              </li>
-            ))}
-          </ul>
-        )}
-      </Card>
+      
     </div>
   );
 }
