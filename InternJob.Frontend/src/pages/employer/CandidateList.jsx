@@ -54,12 +54,7 @@ async function load() {
           <Table
             emptyLabel="Chưa có ứng viên nào"
           columns={[
-            { 
-              key: "candidateName", 
-              header: "Ứng viên", 
-              // Nếu API chưa có tên ứng viên, bạn dùng tạm tên file CV làm định danh
-              render: (r) => <span className="font-medium text-ink">{r.candidateName || r.cvFileName.split('-')[1]?.replace('.pdf', '') || "Ứng viên"}</span> 
-            },
+          
             { 
               key: "jobTitle", 
               header: "Vị trí", 
@@ -76,12 +71,22 @@ async function load() {
               render: (r) => <Badge status={r.status} /> 
             },
             {
-              key: "actions", 
-              header: "Thao tác", 
-              render: (r) => (
-                <div className="flex items-center gap-3 justify-end">
-                  <button onClick={() => setViewing(r)} className="text-navy-600 font-semibold hover:underline">Xem CV</button>
-                </div>
+            key: "actions", 
+            header: "Thao tác", 
+            render: (r) => (
+              <div className="flex items-center gap-3  pr-4"> 
+                <button
+                  onClick={() =>
+                    window.open( 
+                      `http://localhost:5248${r.cvPath}`,
+                      "_blank"
+                    )
+                  }
+                  className="text-navy-600 font-semibold hover:underline cursor-pointer"
+                >
+                  Xem CV
+                </button>
+              </div>
               )
             },
           ]}

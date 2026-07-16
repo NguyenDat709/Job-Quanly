@@ -2,8 +2,6 @@ export const NAV_BY_ROLE = {
   candidate: [
     { to: "/candidate/dashboard", label: "Tổng quan", icon: "🏠" },
     { to: "/candidate/jobs", label: "Tìm việc làm", icon: "🔎" },
-    { to: "/candidate/applications", label: "Hồ sơ ứng tuyển", icon: "📄" },
-    { to: "/candidate/ai-history", label: "Lịch sử AI", icon: "🤖" },
     { to: "/candidate/profile", label: "Hồ sơ cá nhân", icon: "👤" },
   ],
   employer: [

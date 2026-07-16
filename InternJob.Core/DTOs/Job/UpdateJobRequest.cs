@@ -18,6 +18,12 @@ public class UpdateJobRequest
     public string Salary { get; set; } = "Thỏa thuận";
 
     [Required]
+    public int SalaryMin { get; set; }
+
+    [Required]
+    public int SalaryMax { get; set; }
+
+    [Required]
     [MaxLength(150)]
     public string Location { get; set; } = null!;
 

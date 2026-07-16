@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
-import * as api from "../../mockapi";
+import api from "../../mockapi/api";
 import Card from "../../components/common/Card";
 import Table from "../../components/common/Table";
 import Badge from "../../components/common/Badge";
@@ -21,18 +21,29 @@ export default function EmployerJobManage() {
 
   useEffect(() => { load(); }, [user.id]);
 
-  async function load() {
-    setLoading(true);
-    setJobs(await api.getJobs({ employerId: user.id }));
+ async function load() {
+  setLoading(true);
+
+  try {
+    const res = await api.get("/Job/my");
+    setJobs(res.data);
+  } catch (e) {
+    toast.error("Không tải được danh sách tin tuyển dụng");
+  } finally {
     setLoading(false);
   }
-
+}
   async function toggleStatus(job) {
-    const next = job.status === "open" ? "closed" : "open";
-    await api.updateJob(job.id, { status: next });
-    toast.success(next === "closed" ? "Đã đóng tin tuyển dụng." : "Đã mở lại tin tuyển dụng.");
+  try {
+    await api.patch(`/Job/${job.jobId}/close`);
+
+    toast.success("Đã đóng tin tuyển dụng.");
+
     load();
+  } catch (e) {
+    toast.error(e.response?.data?.message || "Có lỗi xảy ra");
   }
+}
 
   async function confirmDelete() {
     await api.deleteJob(toDelete);

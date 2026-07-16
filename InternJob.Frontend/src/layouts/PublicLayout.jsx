@@ -13,7 +13,7 @@ export default function PublicLayout() {
       <header className="bg-white border-b border-navy-50 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link to="/" className="font-display font-extrabold text-xl text-navy-800">
-            Việc<span className="text-teal-500">Ngay</span>
+            Intern<span className="text-teal-500">Job</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
             <Link to="/jobs" className="hover:text-navy-800">Việc làm</Link>

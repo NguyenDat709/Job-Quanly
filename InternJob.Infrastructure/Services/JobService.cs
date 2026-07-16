@@ -41,6 +41,8 @@ public class JobService : IJobService
             Description = request.Description,
             Requirements = request.Requirements,
             Salary = request.Salary,
+            SalaryMin= request.SalaryMin,
+            SalaryMax= request.SalaryMax,
             Location = request.Location,
             Deadline = request.Deadline,
             Status = "Pending"
@@ -77,6 +79,8 @@ public class JobService : IJobService
         job.Description = request.Description;
         job.Requirements = request.Requirements;
         job.Salary = request.Salary;
+        job.SalaryMin = request.SalaryMin;
+        job.SalaryMax = request.SalaryMax;
         job.Location = request.Location;
         job.Deadline = request.Deadline;
         job.CategoryId = request.CategoryId;

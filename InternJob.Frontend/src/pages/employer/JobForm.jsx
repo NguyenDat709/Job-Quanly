@@ -2,66 +2,98 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
-import * as api from "../../mockapi";
+import api from "../../mockapi/api";
 import Card from "../../components/common/Card";
 import Breadcrumb from "../../components/common/Breadcrumb";
 
 const LOCATIONS = ["Hà Nội", "Hồ Chí Minh", "Đà Nẵng"];
-const EMPTY = { title: "", description: "", requirements: "", salaryMin: "", salaryMax: "", location: LOCATIONS[0], categoryId: "", deadline: "" };
+const EMPTY = { title: "", 
+  description: "", requirements: "",salary:"",salaryMin: "", salaryMax: "", location: LOCATIONS[0], categoryId: "", deadline: "" };
 
 export default function JobForm() {
   const { id } = useParams();
   const isEdit = Boolean(id);
-  const { user } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
-
-  const [categories, setCategories] = useState([]);
   const [form, setForm] = useState(EMPTY);
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    api.getCategories().then((cats) => {
-      setCategories(cats);
-      setForm((f) => (f.categoryId ? f : { ...f, categoryId: cats[0]?.id || "" }));
-    });
-  }, []);
-
-  useEffect(() => {
-    if (!isEdit) return;
-    api.getJob(id).then((job) => {
-      if (job) setForm({ ...job });
-      setLoading(false);
-    });
-  }, [id, isEdit]);
+ useEffect(() => {
+  if (!isEdit) {
+    setLoading(false);
+    return;
+  }
+ api.get(`/Job/${id}`)
+    .then((res) => {
+      setForm({
+        ...res.data,
+        deadline: res.data.deadline?.split("T")[0]
+      });
+    })
+    .finally(() => setLoading(false));
+  }, [id]);
 
   function set(k, v) { setForm((f) => ({ ...f, [k]: v })); }
 
   async function handleSubmit(e) {
-    e.preventDefault();
-    setError("");
-    if (Number(form.salaryMin) > Number(form.salaryMax)) { setError("Mức lương tối thiểu phải nhỏ hơn hoặc bằng mức lương tối đa."); return; }
-    setSaving(true);
-    try {
-      const payload = { ...form, salaryMin: Number(form.salaryMin), salaryMax: Number(form.salaryMax) };
-      if (isEdit) {
-        await api.updateJob(id, payload);
-        toast.success("Cập nhật tin tuyển dụng thành công.");
-      } else {
-        await api.createJob(payload, user.id);
-        toast.success("Đăng tin tuyển dụng thành công.");
-      }
-      navigate("/employer/jobs");
-    } finally {
-      setSaving(false);
-    }
+  e.preventDefault();
+
+  setError("");
+    if (!form.title.trim()) {
+  setError("Vui lòng nhập tiêu đề.");
+  return;
   }
 
-  if (loading) return null;
+  if (!form.description.trim()) {
+    setError("Vui lòng nhập mô tả.");
+    return;
+  }
 
+  if (!form.requirements.trim()) {
+    setError("Vui lòng nhập yêu cầu.");
+    return;
+  }
+  if (Number(form.salaryMin) > Number(form.salaryMax)) {
+    setError("Lương tối thiểu phải nhỏ hơn lương tối đa.");
+    return;
+  }
+  setSaving(true);
+
+  try {
+    const payload = {
+      title: form.title,
+      description: form.description,
+      requirements: form.requirements,
+      salary: `${Number(form.salaryMin).toLocaleString("vi-VN")} - ${Number(form.salaryMax).toLocaleString("vi-VN")} VNĐ`,
+      salaryMin: Number(form.salaryMin),
+      salaryMax: Number(form.salaryMax),
+      location: form.location,
+      deadline: form.deadline,
+      categoryId: Number(form.categoryId)
+    };
+
+    if (isEdit) {
+      await api.put(`/Job/${id}`, payload);
+      toast.success("Cập nhật thành công");
+    } else {
+      await api.post("/Job", payload);
+      toast.success("Đăng tin thành công");
+    }
+
+    navigate("/employer/jobs");
+  }
+  catch (e) {
+    toast.error(e.response?.data?.message || "Có lỗi xảy ra");
+  }
+  finally {
+    setSaving(false);
+  }
+  
+}
   return (
+    
     <div className="max-w-2xl">
       <Breadcrumb items={[{ label: "Tin tuyển dụng", to: "/employer/jobs" }, { label: isEdit ? "Chỉnh sửa" : "Đăng tin mới" }]} />
       <h1 className="font-display font-extrabold text-2xl text-ink mb-6">{isEdit ? "Chỉnh sửa tin tuyển dụng" : "Đăng tin tuyển dụng mới"}</h1>
@@ -88,11 +120,7 @@ export default function JobForm() {
                 {LOCATIONS.map((l) => <option key={l} value={l}>{l}</option>)}
               </select>
             </Field>
-            <Field label="Ngành nghề">
-              <select value={form.categoryId} onChange={(e) => set("categoryId", e.target.value)} className="input">
-                {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </select>
-            </Field>
+           
           </div>
           <Field label="Hạn nộp hồ sơ">
             <input required type="date" value={form.deadline} onChange={(e) => set("deadline", e.target.value)} className="input" />

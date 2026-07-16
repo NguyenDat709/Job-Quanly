@@ -13,29 +13,23 @@ export function AuthProvider({ children }) {
     if (raw) setUser(JSON.parse(raw));
     setLoading(false);
   }, []);
-
  function persist(u) {
     setUser(u);
     if (u) localStorage.setItem(SESSION_KEY, JSON.stringify(u));
     else localStorage.removeItem(SESSION_KEY);
   }
-
   async function login(email, password) {
-    // Gọi API thật ở đây, dùng await bình thường vì hàm đã có async
     const response = await api.post("/Auth/login", { email, password });
     const u = response.data;
-    
-    persist(u); // Lưu dữ liệu sau khi API trả về
+    persist(u); 
     return u;
   }
-
   async function register(payload) {
     const response = await api.post("/Auth/register", payload);
     const u = response.data;
     persist(u);
     return u;
   }
-
   function logout() {
     persist(null);
   }

@@ -15,7 +15,7 @@ export default function DashboardLayout() {
       {/* Sidebar */}
       <aside className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-navy-800 text-white flex flex-col transition-transform ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
         <Link to="/" className="flex items-center h-16 px-6 font-display font-extrabold text-lg border-b border-navy-700">
-          Việc<span className="text-teal-400">Ngay</span>
+          Intern<span className="text-teal-400">Job</span>
         </Link>
         <div className="px-6 py-4 text-xs uppercase tracking-wide text-navy-300">{ROLE_LABEL[user.role?.toLowerCase()]}</div>
         <nav className="flex-1 px-3 space-y-1">
