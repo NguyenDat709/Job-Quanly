@@ -49,4 +49,16 @@ public class ApplicationRepository : IApplicationRepository
     {
         await _context.SaveChangesAsync();
     }
+
+    public async Task<Application?> GetByIdAsync(int applicationId)
+    {
+        return await _context.Applications
+            .FirstOrDefaultAsync(x => x.ApplicationId == applicationId);
+    }
+
+    public void Update(Application application)
+    {
+        _context.Applications.Update(application);
+    }
+
 }

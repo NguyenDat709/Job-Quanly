@@ -90,7 +90,7 @@ export default function EmployerJobManage() {
                     <Link to={`/employer/jobs/${r.jobId}/edit`} className="text-navy-600 font-semibold hover:underline">Sửa</Link>
                     {r.status !== "expired" && (
                       <button onClick={() => toggleStatus(r)} className="text-navy-600 font-semibold hover:underline">
-                        {r.status === "open" ? "Đóng tin" : "Mở lại"}
+                        {r.status === "open" ? "Mở lại" : "Đóng tin"}
                       </button>
                     )}
                     {/* <button onClick={() => setToDelete(r.id)} className="text-coral-600 font-semibold hover:underline">Xóa</button> */}

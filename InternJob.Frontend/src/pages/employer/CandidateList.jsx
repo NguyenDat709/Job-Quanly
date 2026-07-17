@@ -33,7 +33,7 @@ async function load() {
 
   async function setStatus(app, status) {
   try {
-    await api.patch(`/Application/${app.id}/status`, { status });
+    await api.patch(`/Application/${app.applicationId}/status`, { status });
     toast.success(`Đã cập nhật trạng thái`);
     load();
   } catch (error) {
@@ -65,10 +65,22 @@ async function load() {
               header: "Ngày ứng tuyển", 
               render: (r) => new Date(r.appliedAt).toLocaleDateString('vi-VN') 
             },
-            { 
-              key: "status", 
-              header: "Trạng thái", 
-              render: (r) => <Badge status={r.status} /> 
+           {
+              key: "status",
+              header: "Trạng thái",
+              render: (r) => (
+                <select
+                  value={r.status}
+                  onChange={(e) => setStatus(r, e.target.value)}
+                  className="border rounded-lg px-2 py-1 text-sm"
+                >
+                  <option value="Reviewing">Đang xem xét</option>
+                  <option value="Viewed">Đã xem</option>
+                  <option value="Interviewing">Phỏng vấn</option>
+                  <option value="Accepted">Được nhận</option>
+                  <option value="Rejected">Từ chối</option>
+                </select>
+              )
             },
             {
             key: "actions", 

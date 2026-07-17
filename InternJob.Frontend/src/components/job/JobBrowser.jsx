@@ -29,8 +29,9 @@ export default function JobBrowser({ detailBasePath }) {
             Page: page,
             PageSize: 6,
             Keyword : keyword,
-            Location: location === "Tất cả địa điểm" ? "" : location
-        }
+            Location: location === "Tất cả địa điểm" ? "" : location,
+            CategoryId: categoryId
+          }
     })
     .then(response => {
        setJobs(response.data.items);
@@ -53,7 +54,7 @@ export default function JobBrowser({ detailBasePath }) {
         if (location && location !== "Tất cả địa điểm" && j.location !== location) return false;
         return true;
     });
-}, [jobs, keyword, location]);
+}, [jobs, keyword, location,categoryId]);
 
 
   // const { pageItems, totalPages }=paginate(filtered, page, PAGE_SIZE);

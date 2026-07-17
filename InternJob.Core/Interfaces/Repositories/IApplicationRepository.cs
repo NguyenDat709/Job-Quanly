@@ -9,4 +9,7 @@ public interface IApplicationRepository
     Task AddAsync(Application application);
     Task<List<Application>> GetAllByEmployerIdAsync(int employerId);
     Task SaveChangesAsync();
+    Task<Application?> GetByIdAsync(int applicationId);
+
+    void Update(Application application);
 }

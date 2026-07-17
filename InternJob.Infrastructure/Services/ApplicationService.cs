@@ -76,7 +76,19 @@ public class ApplicationService : IApplicationService
             CVFileName = cv.FileName
         };
     }
+    public async Task UpdateStatusAsync(int applicationId, string status)
+{
+    var application = await _applicationRepository.GetByIdAsync(applicationId);
 
+    if (application == null)
+        throw new Exception("Không tìm thấy đơn ứng tuyển.");
+
+    application.Status = status;
+
+    _applicationRepository.Update(application);
+
+    await _applicationRepository.SaveChangesAsync();
+}
     public async Task<List<ApplicationResponse>> GetApplicationsByEmployerIdAsync(int employerId)
     {
        var employer = await _employerRepository.GetByUserIdAsync(employerId)
@@ -120,4 +132,6 @@ public class ApplicationService : IApplicationService
             CVFileName = a.CV.FileName
         }).ToList();
     }
+
+   
 }

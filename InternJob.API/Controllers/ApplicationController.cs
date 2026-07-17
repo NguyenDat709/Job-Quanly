@@ -54,7 +54,20 @@ public class ApplicationController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
-    
+    [HttpPatch("{id}/status")]
+[Authorize(Roles = "Employer")]
+public async Task<IActionResult> UpdateStatus(int id, UpdateApplicationStatusRequest request)
+{
+    try
+    {
+        await _applicationService.UpdateStatusAsync(id, request.Status);
+        return Ok();
+    }
+    catch (Exception ex)
+    {
+        return BadRequest(new { message = ex.Message });
+    }
+}
     [HttpGet("employer")] // API: GET /api/Application/employer
     [Authorize(Roles = "Employer")]
     public async Task<IActionResult> GetApplicationsForEmployer()

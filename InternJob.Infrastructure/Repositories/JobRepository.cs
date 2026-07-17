@@ -69,7 +69,7 @@ public class JobRepository : IJobRepository
 
         if (categoryId.HasValue)
             query = query.Where(j => j.CategoryId == categoryId.Value);
-
+        
         var total = await query.CountAsync();
 
         var items = await query
